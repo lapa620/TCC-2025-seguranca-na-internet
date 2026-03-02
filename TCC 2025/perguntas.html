@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz Avançado de Cibersegurança</title>
+
+<style>
+:root {
+    --bg: #0f1724;
+    --accent: #f8fafc;
+    --muted: rgba(248,250,252,0.8);
+    --card-bg: #1f1e1e;
+    --card-hover: rgba(255,255,255,.04);
+    --highlight: #458666;
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
+* { box-sizing: border-box; margin:0; padding:0; }
+
+body {
+    margin:0;
+    min-height:100vh;
+    background: radial-gradient(ellipse at 10% 10%, rgba(99,102,241,0.12), transparent 10%),
+                radial-gradient(ellipse at 90% 90%, rgba(6,182,212,0.06), transparent 10%),
+                var(--bg);
+    color: var(--accent);
+  
+}
+
+/* ================= SIDEBAR ================= */
+.sidebar {
+            width: 240px;
+            background: linear-gradient(180deg, #0f1420 0%, #0f1420 40%, rgba(15,20,32,.6) 100%);
+            border-right: 1px solid rgba(255,255,255,.06);
+            padding: 18px 14px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .brand { display:flex; align-items:center; gap:10px; padding:10px 8px; margin-bottom:8px; }
+        .brand svg { width:28px; height:28px; }
+        .brand strong { font-weight:700; letter-spacing:.3px; }
+        .nav { margin-top:10px; display:flex; flex-direction:column; gap:6px; }
+        .nav a {
+            display:flex; align-items:center; gap:12px;
+            padding:12px 14px; border-radius:14px; color:#fff;
+            text-decoration:none; opacity:.9; transition:.2s ease; font-weight:500;
+        }
+        .nav a:hover { background: var(--card-hover); transform:translateX(2px); }
+        .nav a.active { background:linear-gradient(135deg, rgba(0,209,154,.18), rgba(40,160,255,.12)); border:1px solid rgba(255,255,255,.06); }
+        .sidebar .footer { margin-top:auto; font-size:12px; color:var(--muted); }
+
+
+/* ================= MAIN ================= */
+.main-content { margin-left: 240px; padding: 30px; display:flex; flex-direction:column; align-items:center;font-size: 29px; }
+
+/* ================= QUIZ ================= */
+.question-box {
+    
+    margin-top: 9%;
+    background: var(--card-bg);
+    border-radius: 20px;
+    padding: 30px;
+    max-width: 800px;
+    width: 100%;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+    margin-bottom: 50px;
+    animation: fadeIn 0.5s ease;
+}
+@keyframes fadeIn { from {opacity:0; transform:translateY(20px);} to {opacity:1; transform:translateY(0);} }
+
+.question { font-size:24px; margin-bottom:25px; font-weight:600; text-align:center; color: var(--accent); }
+.options { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; font-size:42px; }
+.option {
+    flex-basis: calc(50% - 10px);
+    background: #2f3e46;
+    padding: 15px;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: 0.3s ease;
+    border: 2px solid transparent;
+    text-align: center;
+    color: var(--accent);
+     font-size:40px;
+}
+.option:hover { background: #3c4a56; transform: scale(1.02); }
+.option.correct { background-color: #458666; border-color: #00d19a; }
+.option.wrong { background-color: #993333; border-color: #ff4d4d; }
+
+.option img { max-width: 100%; height:auto; max-height:180px; border-radius:8px; margin-bottom:10px; }
+.feedback { margin-top:20px; font-size:18px; text-align:center; }
+.explanation { margin-top:10px; font-size:14px; padding:10px; border-left:5px solid #00d19a; background:#1e293b; color:#f8fafc; }
+.next-btn {
+    margin-top: 25px; padding:12px 24px;
+    font-size:16px; background:#00d19a; color:#0f1724; border:none;
+    border-radius:12px; cursor:pointer; transition:0.3s ease; display:none;
+}
+.next-btn:hover { background:#28a0ff; color:#fff; }
+
+.score-box { margin-top:40px; text-align:center; font-size:22px; color:#00d19a; }
+
+/* ================= RESPONSIVIDADE ================= */
+@media (max-width:768px) {
+    .main-content { margin-left: 20px; padding:20px; }
+    .option { flex-basis:100%; }
+}
+
+.nav a.active{background:linear-gradient(135deg, rgba(0,209,154,.18), rgba(40,160,255,.12)); border:1px solid rgba(255,255,255,.06)}
+</style>
+</head>
+
+<body>
+<aside class="sidebar">
+    <div class="brand">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" class="icon"><path d="M12 2l7 3v6c0 5.25-3.5 10-7 11-3.5-1-7-5.75-7-11V5l7-3Z" stroke="currentColor" stroke-width="1.6"/></svg>
+        <strong>TCC - Segurança na internet</strong>
+    </div>
+    <nav class="nav">
+        <a  href="TCC2.html"><span>Infográfico</span></a>
+        <a href="golpes.html">Golpes</a>
+        <a href="AntiV.html"><span>Antivírus</span></a>
+        <a href="Cartão.html"><span>Simulação de Cartão</span></a>
+        <a href="virus.html"><span>Virus Falso</span></a>
+        <a class="active" href="perguntas.html"><span>Quiz de Segurança</span></a>
+        <a  href="indicaçoes.html">Indicaçoes de Segurança</a>
+
+    </nav>
+    <div class="footer">v. 1.0.0 • Base de dados: 05/09/2025</div>
+</aside>
+
+<div class="main-content">
+    <h1>Escolha a opção correta</h1>
+    <div class="question-box" id="questionBox">
+        <div class="question" id="questionText">Carregando pergunta...</div>
+        <div class="options" id="optionsContainer"></div>
+        <div class="feedback" id="feedback"></div>
+        <button class="next-btn" id="nextButton" onclick="nextQuestion()">Próximo</button>
+    </div>
+    <div class="score-box" id="scoreBox" style="display:none;"></div>
+</div>
+
+<script>
+const originalQuestions = [
+  {
+    question: "Analisando a URL e o conteúdo, qual dessas telas de login é um caso CLARO de Phishing?",
+    options: [
+      { 
+        text: "Site Falso: URL errada, design amador, pop-up de urgência.", 
+        image: "https://cdn-icons-png.flaticon.com/512/6195/6195699.png", // Consistente: Ícone de escudo para aviso de segurança/phishing
+        correct: true 
+      },
+      { 
+        text: "Site Legítimo: URL e certificado de segurança corretos.", 
+        image: "https://cdn-icons-png.flaticon.com/512/6195/6195692.png", // Consistente: Ícone de cadeado para segurança legítima
+        correct: false 
+      }
+    ],
+    explanation: "Phishing tenta roubar suas credenciais. O principal sinal é a URL incorreta e elementos visuais que criam urgência."
+  },
+  {
+    question: "Observando as senhas, qual delas atende aos requisitos de FORÇA e COMPLEXIDADE?",
+    options: [
+      { 
+        text: "Senha Fraca: apenas letras minúsculas (ex: 'meuapelido123').", 
+        image: "https://cdn-icons-png.flaticon.com/512/2910/2910764.png", // Consistente: Cadeado quebrado para segurança fraca
+        correct: false 
+      },
+      { 
+        text: "Senha Forte: combina letras, números e símbolos (ex: '!P@ssW0rd_2025').", 
+        image: "https://cdn-icons-png.flaticon.com/512/6195/6195699.png", // Consistente: Escudo para proteção forte
+        correct: true 
+      }
+    ],
+    explanation: "Senhas fortes combinam caracteres variados e têm grande comprimento, dificultando ataques de força bruta."
+  },
+  {
+    question: "Qual é a forma mais segura de usar redes Wi-Fi públicas?",
+    options: [
+      { 
+        text: "Usar qualquer rede pública sem preocupação.", 
+        image: "https://cdn-icons-png.flaticon.com/512/3616/3616895.png", // Consistente: Ícone de Wi-Fi para rede pública (arriscada)
+        correct: false 
+      },
+      { 
+        text: "Usar VPN ou redes privadas com senha.", 
+        image: "https://cdn-icons-png.flaticon.com/512/11405/11405810.png", // Consistente: Ícone de escudo VPN para proteção
+        correct: true 
+      }
+    ],
+    explanation: "Evite redes públicas sem proteção. Prefira conexões privadas ou utilize VPN."
+  },
+  {
+    question: "Como identificar phishing em um e-mail?",
+    options: [
+      { 
+        text: "Clicar em qualquer link sem verificar.", 
+        image: "https://cdn-icons-png.flaticon.com/512/11845/11845736.png", // Consistente: Ícone de e-mail para ação arriscada
+        correct: false 
+      },
+      { 
+        text: "Verificar remetente, links e evitar anexos suspeitos.", 
+        image: "https://cdn-icons-png.flaticon.com/512/5429/5429651.png", // Consistente: Lupa para verificação
+        correct: true 
+      }
+    ],
+    explanation: "Phishing tenta roubar credenciais; verifique sempre remetente, links e anexos."
+  },
+  {
+    question: "Por que manter sistemas atualizados é importante?",
+    options: [
+      { 
+        text: "Não faz diferença, pode ignorar.", 
+        image: "https://cdn-icons-png.flaticon.com/512/992/992703.png", // Consistente: Equipamento desatualizado para negligência
+        correct: false 
+      },
+      { 
+        text: "Atualizações corrigem vulnerabilidades e aumentam a segurança.", 
+        image: "https://cdn-icons-png.flaticon.com/512/992/992651.png", // Consistente: Seta de atualização para melhoria
+        correct: true 
+      }
+    ],
+    explanation: "Atualizações de sistema e aplicativos corrigem falhas que hackers poderiam explorar."
+  },
+  {
+    question: "Como proteger sua privacidade online?",
+    options: [
+      { 
+        text: "Compartilhar todos os dados livremente.", 
+        image: "https://cdn-icons-png.flaticon.com/512/3864/3864725.png", // Consistente: Olho aberto para exposição
+        correct: false 
+      },
+      { 
+        text: "Usar bloqueadores de cookies, VPN e limitar compartilhamento.", 
+        image: "https://cdn-icons-png.flaticon.com/512/6195/6195692.png", // Consistente: Cadeado de privacidade para proteção
+        correct: true 
+      }
+    ],
+    explanation: "Use ferramentas que bloqueiem rastreadores, VPNs e compartilhe apenas o necessário."
+  }
+];
+
+
+
+
+
+let questions = [], currentQuestion = 0, score = 0;
+function shuffleArray(array){ for(let i=array.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [array[i],array[j]]=[array[j],array[i]]; } }
+
+function initializeQuiz(){
+    questions=[...originalQuestions]; shuffleArray(questions);
+    currentQuestion=0; score=0;
+    document.getElementById("questionBox").style.display="block";
+    scoreBox.style.display="none";
+    loadQuestion();
+}
+
+function loadQuestion(){
+    const q = questions[currentQuestion];
+    questionText.textContent = q.question;
+    optionsContainer.innerHTML = "";
+    feedback.innerHTML = "";
+    nextButton.style.display="none";
+    const shuffledOptions=[...q.options]; shuffleArray(shuffledOptions);
+    shuffledOptions.forEach(opt=>{
+        const btn = document.createElement("div");
+        btn.className="option";
+        btn.dataset.correct=opt.correct;
+        btn.innerHTML=`<div class="option-content">
+            <img src="${opt.image}" alt="${opt.text}" onerror="this.src='https://via.placeholder.com/200/004d40/ffffff?text=Imagem+Indisponível'">
+            <p style="font-weight:bold;margin-top:5px;font-size:15px;">${opt.text}</p>
+        </div>`;
+        btn.onclick=()=>handleAnswer(btn,opt.correct,q.explanation);
+        optionsContainer.appendChild(btn);
+    });
+}
+
+function handleAnswer(element,isCorrect,explanation){
+    document.querySelectorAll(".option").forEach(btn=>btn.onclick=null);
+    if(isCorrect){ element.classList.add("correct"); feedback.innerHTML=`✅ <b>Correto!</b>`; score++; }
+    else{ element.classList.add("wrong"); feedback.innerHTML=`❌ <b>Incorreto!</b>`; const correctOption=[...document.querySelectorAll(".option")].find(btn=>btn.dataset.correct==='true'); if(correctOption) correctOption.classList.add("correct"); }
+    feedback.innerHTML+=`<div class="explanation"><b>Conhecimento Prático:</b> ${explanation}</div>`;
+    nextButton.style.display="inline-block";
+}
+
+function nextQuestion(){
+    currentQuestion++;
+    if(currentQuestion<questions.length) loadQuestion();
+    else showFinalScore();
+}
+
+function showFinalScore(){
+    questionBox.style.display="none";
+    scoreBox.style.display="block";
+    let msg = "";
+    if(score===questions.length) msg="👑 Mestre em Cibersegurança!";
+    else if(score>=questions.length/2) msg="💡 Bom Nível!";
+    else msg="⚠️ Hora de revisar!";
+    scoreBox.innerHTML=`<p>Sua pontuação: <strong>${score}/${questions.length}</strong></p>
+        <p>${msg}</p>
+        <button class="next-btn" style="display:block;width:auto;margin:auto;" onclick="initializeQuiz()">Recomeçar</button>`;
+}
+
+initializeQuiz();
+</script>
+</body>
+</html>

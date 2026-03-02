@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Infográfico + Gráficos de Pizza — Modernizado</title>
+
+<!-- Chart.js + datalabels -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+
+<style>
+        :root {
+            --bg: #0f1724;
+            --accent: #f8fafc;
+            --muted: rgba(248,250,252,0.8);
+            font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+        }
+        * { box-sizing: border-box; }
+  body{
+    margin:0;
+    background: radial-gradient(ellipse at 10% 10%, rgba(99,102,241,0.12), transparent 10%),
+              radial-gradient(ellipse at 90% 90%, rgba(6,182,212,0.06), transparent 10%),
+              var(--bg);
+      /* var(--bg); */
+    color: var(--accent);
+    color: var(--accent);
+    padding: 24px;
+    overflow-x: hidden;
+  }
+
+  /* layout */
+  .page {
+    width:100%;
+    max-width:1200px;
+  }
+
+  /* header circle */
+  .title-circle{
+    margin: 6px auto 22px;
+    width: 100%;
+    max-width:780px;
+    height:84px;
+    border-radius:999px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border:1px solid rgba(255,255,255,0.03);
+    box-shadow: 0 6px 30px rgba(2,6,23,0.5), 0 1px 0 rgba(255,255,255,0.02) inset;
+    font-weight:700;
+    font-size:40px;
+    letter-spacing:0.2px;
+    color:var(--text);
+  }
+
+ 
+    /* Sidebar */
+    .sidebar {
+            width: 240px;
+            background: linear-gradient(180deg, #0f1420 0%, #0f1420 40%, rgba(15,20,32,.6) 100%);
+            border-right: 1px solid rgba(255,255,255,.06);
+            padding: 18px 14px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            z-index: 1;
+        }
+        .brand { display:flex; align-items:center; gap:10px; padding:10px 8px; margin-bottom:8px; }
+        .brand svg { width:28px; height:28px; }
+        .brand strong { font-weight:700; letter-spacing:.3px }
+        .nav { margin-top:10px; display:flex; flex-direction:column; gap:6px }
+        .nav a {
+            display:flex; align-items:center; gap:12px;
+            padding:12px 14px; border-radius:14px; color:#fff;
+            text-decoration:none; opacity:.9; transition:.2s ease; font-weight:500;
+        }
+        .nav a:hover { background:rgba(255,255,255,.04); transform:translateX(2px) }
+        .nav a.active { background:linear-gradient(135deg, rgba(0,209,154,.18), rgba(40,160,255,.12)); border:1px solid rgba(255,255,255,.06) }
+        .sidebar .footer { margin-top:auto; font-size:12px; color:var(--muted, #aaa); }
+        .main-content { margin-left: 240px; padding: 20px; }
+        .infografico-wrapper {
+            position:relative;
+            width: 1000px;
+            height: 600px;
+            margin: 20px auto;
+            overflow: hidden;
+            background: radial-gradient(ellipse at 10% 10%, rgba(99,102,241,0.12), transparent 10%),
+                        radial-gradient(ellipse at 90% 90%, rgba(6,182,212,0.06), transparent 10%),
+                        var(--bg);
+            border-radius: 20px;
+            padding: 20px;
+        }
+  /* infografico wrapper (cards) */
+  .infografico-wrapper{
+    width:100%;
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius: var(--radius);
+    padding:16px;
+    display:flex;
+    gap:16px;
+    align-items:stretch;
+    border:1px solid rgba(255,255,255,0.03);
+    box-shadow: 0 8px 30px rgba(2,6,23,0.5);
+    overflow:hidden;
+  }
+
+  .column {
+    width:50%;
+    position:relative;
+    height:420px;
+    overflow:hidden;
+    padding:8px;
+  }
+
+  /* wrapper that will contain absolute-positioned items */
+  .infografico-scroll{position:absolute;inset:8px 8px 8px 8px}
+
+  /* timeline items */
+  .timeline-item{
+    display:flex;
+    gap:12px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius:12px;
+    padding:14px;
+    box-shadow: 0 6px 18px rgba(2,6,23,0.5);
+    border:1px solid rgba(255,255,255,0.02);
+    width: calc(100% - 8px);
+    color:var(--text);
+    transition: transform .18s ease, box-shadow .18s ease;
+    cursor:pointer;
+  }
+  .timeline-item:hover{
+    transform:translateY(-6px);
+    box-shadow: 0 12px 28px rgba(2,6,23,0.65);
+  }
+  .circle-step{
+    min-width:54px;min-height:54px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(180deg, var(--accent-1), rgba(45,212,191,0.85)); color:#02121a; font-weight:800; font-size:20px;
+    flex-shrink:0;
+    border-radius:12px;
+  }
+  .timeline-item .content h3{margin:0;font-size:16px}
+  .timeline-item .content p{margin:6px 0 0;color:var(--muted);line-height:1.45;font-size:14px}
+
+  /* modal */
+  .overlay{position:fixed;left:0;top:0;width:100vw;height:100vh;display:none;align-items:center;justify-content:center;background:linear-gradient(rgba(2,6,23,0.6),rgba(2,6,23,0.6));z-index:60}
+  .modal{
+    width:92%;max-width:920px;background:linear-gradient(180deg,#f1f5f9,#e6eef8);color:#1f2937;padding:20px;border-radius:12px;box-shadow:0 12px 40px rgba(2,6,23,0.6);
+    max-height:86vh;overflow:auto;
+  }
+  .modal h2{margin:0 0 8px}
+  .modal p{color:#334155}
+
+  /* charts grid */
+  .charts-wrapper{
+    width:100%;
+    display:grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap:16px;
+    margin-top:22px;
+  }
+  .chart-card{
+    border-radius:12px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    padding:14px;
+    min-height:260px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-start;
+    border:1px solid rgba(255,255,255,0.02);
+    box-shadow:0 8px 24px rgba(2,6,23,0.45);
+    position:relative;
+    overflow:hidden;
+  }
+  .chart-card h3{margin:6px 0 10px;font-size:16px;color:var(--text)}
+  /* proper circular canvases */
+  .chart-card canvas{
+    width:auto !important;
+    height:auto !important;
+    max-width:260px;
+    aspect-ratio:1/1;
+  }
+  .chart-legend{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px}
+  .chart-legend .item{display:flex;gap:8px;align-items:center;color:var(--muted);font-weight:700;font-size:13px}
+  .chart-legend .bol{width:12px;height:12px;border-radius:3px;display:inline-block}
+
+  /* reports */
+  .reports{
+    margin-top:18px;
+    padding:16px;
+    background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius:12px;border:1px solid rgba(255,255,255,0.02);box-shadow:0 8px 24px rgba(2,6,23,0.45)
+  }
+  .reports h4{margin:0 0 8px;color:var(--text)}
+  .reports textarea{width:100%;min-height:110px;border-radius:10px;padding:12px;border:none;background:#071025;color:var(--text);font-size:14px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.01)}
+  .reports .actions{display:flex;gap:10px;margin-top:10px}
+  .reports button{background:linear-gradient(90deg,var(--accent-2),var(--accent-1));border:none;color:#041428;padding:8px 12px;border-radius:10px;cursor:pointer;font-weight:700}
+  .reports button.ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)}
+  .reports .list{margin-top:12px;display:flex;flex-direction:column;gap:10px;max-height:220px;overflow:auto;padding-right:6px}
+  .report-item{background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00));padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.02);color:var(--text);font-size:14px}
+
+  /* small screens */
+  @media (max-width:980px){
+    .sidebar{display:none}
+    .main-content{margin-left:0;padding:16px}
+    .infografico-wrapper{flex-direction:column;height:auto}
+    .column{width:100%;height:260px}
+    .charts-wrapper{grid-template-columns:1fr}
+  }
+
+  /* subtle glow pulse for chart on load (used by JS toggle) */
+  .glow-in{
+    animation: glowPulse 1400ms ease both;
+  }
+  @keyframes glowPulse{
+    from{box-shadow:0 8px 24px rgba(2,6,23,0.45)}
+    50%{box-shadow:0 20px 40px rgba(96,165,250,0.18)}
+    to{box-shadow:0 8px 24px rgba(2,6,23,0.45)}
+  }
+</style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="brand">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor"><path d="M12 2l7 3v6c0 5.25-3.5 10-7 11-3.5-1-7-5.75-7-11V5l7-3Z" stroke="currentColor" stroke-width="1.6"/></svg> 
+      <strong>TCC - Segurança na internet</strong>
+      </div>
+      <nav class="nav">
+        <a href="TCC2.html">Infográfico</a>
+        <a class="active">Golpes</a>
+        <a href="AntiV.html">Antivírus</a>
+        <a href="Cartão.html">Simulação de Cartão</a>
+        <a href="virus.html">Vírus Falso</a>
+        <a  href="perguntas.html"><span>Quiz de Segurança</span></a>
+        <a  href="indicaçoes.html">Indicaçoes de Segurança</a>
+      </nav>
+      <div class="footer">v. 1.0.0 • Base de dados: 05/09/2025</div>
+    </aside>
+
+    <main class="main-content" role="main">
+      <div class="title-circle"><strong>Golpes da Internet</strong></div>
+
+      <!-- INFOGRAFICO: two columns with automatic scroll (escalator) -->
+      <section class="infografico-wrapper" id="infograficoWrapper" aria-label="Infográfico com golpes">
+        <div class="column" id="leftCol">
+          <div class="infografico-scroll" id="leftScroll">
+            <!-- left items (kept content) -->
+            <div class="timeline-item" data-title="Instagram" data-text="Golpe do Código de Verificação — o golpista solicita que você repasse um código que foi enviado ao seu número. Esse é o código de autenticação; ao enviá-lo, você perde o controle da conta. Sempre ative autenticação em duas etapas e desconfie de solicitações de códigos." data-images="https://source.unsplash.com/400x300/?instagram,security">
+              <div class="circle-step">📱</div>
+              <div class="content"><h3>Instagram</h3><p>Golpe do código de verificação — nunca repasse códigos recebidos por SMS ou DM.</p></div>
+            </div>
+
+            <div class="timeline-item" data-title="Instagram" data-text="Perfis falsos de marcas e sorteios — contas criadas para se passar por marcas divulgam promoções falsas pedindo dados ou cliques em links. Sempre verifique se a conta é oficial, procure selo de verificação e checar comentários e presença em outras redes." data-images="https://source.unsplash.com/400x300/?instagram,fake">
+              <div class="circle-step">🎁</div>
+              <div class="content"><h3>Instagram</h3><p>Perfis falsos e sorteios — confirme sempre a autenticidade antes de participar.</p></div>
+            </div>
+
+            <div class="timeline-item" data-title="WhatsApp" data-text="Clonagem de conta — golpistas usam engenharia social para obter códigos de ativação. Assim que clonam, passam a pedir dinheiro aos seus contatos. Ative a verificação em duas etapas e confirme sempre via chamada." data-images="https://source.unsplash.com/400x300/?whatsapp,scam">
+              <div class="circle-step">📞</div>
+              <div class="content"><h3>WhatsApp</h3><p>Clonagem de conta: nunca compartilhe códigos SMS e ative 2FA no app.</p></div>
+            </div>
+
+            <div class="timeline-item" data-title="WhatsApp" data-text="Golpe do falso parente — mensagem enviada de número desconhecido se passando por familiar pede transferência urgente. Verifique por outro canal antes de transferir dinheiro." data-images="https://source.unsplash.com/400x300/?whatsapp,family">
+              <div class="circle-step">👨‍👩‍👧</div>
+              <div class="content"><h3>WhatsApp</h3><p>Falso parente: confirme identidade por chamada antes de qualquer PIX/transferência.</p></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="column" id="rightCol">
+          <div class="infografico-scroll" id="rightScroll">
+            <div class="timeline-item" data-title="WhatsApp" data-text="Golpe de empresas falsas — mensagens fingindo promoções enviam links que instalam malware ou capturam dados. Não clique em links desconhecidos e confirme promoções no site oficial." data-images="https://source.unsplash.com/400x300/?whatsapp,fake-company">
+              <div class="circle-step">🏢</div>
+              <div class="content"><h3>WhatsApp</h3><p>Empresas falsas: nunca clique em links de promoções recebidas por mensagem sem confirmar.</p></div>
+            </div>
+
+            <div class="timeline-item" data-title="Facebook" data-text="Phishing com links falsos — posts dizendo 'veja quem visitou seu perfil' levam a páginas que pedem login e senha. Sempre acesse apenas o site oficial e verifique URL segura." data-images="https://source.unsplash.com/400x300/?facebook,phishing">
+              <div class="circle-step">🔗</div>
+              <div class="content"><h3>Facebook</h3><p>Links falsos: não entre suas credenciais em sites desconhecidos.</p></div>
+            </div>
+
+            <div class="timeline-item" data-title="Facebook" data-text="Perfis clonados no Facebook — golpistas criam contas idênticas à sua para pedir favores ou dinheiro aos seus amigos. Denuncie e avise sua rede." data-images="https://source.unsplash.com/400x300/?facebook,clone">
+              <div class="circle-step">🕵️</div>
+              <div class="content"><h3>Facebook</h3><p>Perfis clonados: denuncie e avise amigos caso aconteça.</p></div>
+            </div>
+
+            <div class="timeline-item" data-title="Roblox" data-text="Robux grátis e scams dentro do jogo — páginas e mensagens prometem moedas grátis em troca do login. Essas páginas roubam credenciais. Use apenas o site oficial e não compartilhe dados de login." data-images="https://source.unsplash.com/400x300/?roblox,scam">
+              <div class="circle-step">🎮</div>
+              <div class="content"><h3>Roblox</h3><p>Robux grátis: nunca informe login fora do site oficial do Roblox.</p></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- modal -->
+      <div class="overlay" id="overlay"><div class="modal" id="modal"><h2 id="modal-title"></h2><p id="modal-text"></p><div class="images" id="modal-images"></div></div></div>
+
+      <!-- charts (2 per line) -->
+      <section class="charts-wrapper" id="chartsWrapper" aria-label="Gráficos de golpes">
+        <div class="chart-card" id="cardWA">
+          <h3>WhatsApp — Tipos de golpe</h3>
+          <canvas id="chartWhatsApp"></canvas>
+          <div class="chart-legend" id="legendWhatsApp"></div>
+        </div>
+
+        <div class="chart-card" id="cardIG">
+          <h3>Instagram — Tipos de golpe</h3>
+          <canvas id="chartInstagram"></canvas>
+          <div class="chart-legend" id="legendInstagram"></div>
+        </div>
+
+        <div class="chart-card" id="cardFB">
+          <h3>Facebook — Tipos de golpe</h3>
+          <canvas id="chartFacebook"></canvas>
+          <div class="chart-legend" id="legendFacebook"></div>
+        </div>
+
+        <div class="chart-card" id="cardRB">
+          <h3>Roblox — Tipos de golpe</h3>
+          <canvas id="chartRoblox"></canvas>
+          <div class="chart-legend" id="legendRoblox"></div>
+        </div>
+      </section>
+
+      <!-- reports -->
+      <section class="reports" id="reports">
+        <h4>Relate um golpe que você sofreu (ou quase sofreu)</h4>
+        <textarea id="reportInput" placeholder="Conte brevemente o que aconteceu..."></textarea>
+        <div class="actions">
+          <button id="btnSaveReport">Salvar relato</button>
+          <button id="btnClearReports" class="ghost">Limpar relatos</button>
+        </div>
+        <div class="list" id="reportList" aria-live="polite"></div>
+      </section>
+    </main>
+  </div>
+
+<script>
+/* ============================
+   Modal logic (kept & adapted)
+   ============================ */
+const items = document.querySelectorAll('.timeline-item');
+const overlay = document.getElementById('overlay');
+const modalTitle = document.getElementById('modal-title');
+const modalText = document.getElementById('modal-text');
+const modalImages = document.getElementById('modal-images');
+
+items.forEach(it => {
+  it.addEventListener('click', () => {
+    modalTitle.textContent = it.dataset.title || '';
+    modalText.textContent = it.dataset.text || '';
+    modalImages.innerHTML = '';
+    const urls = (it.dataset.images || '').split(',');
+    urls.forEach(u => {
+      if(u.trim()){
+        const img = document.createElement('img');
+        img.src = u.trim();
+        img.alt = it.dataset.title || 'imagem';
+        img.style.borderRadius = '8px';
+        modalImages.appendChild(img);
+      }
+    });
+    overlay.style.display = 'flex';
+  });
+});
+overlay.addEventListener('click', (e) => {
+  if(e.target === overlay) overlay.style.display = 'none';
+});
+
+/* ====================================================
+   Escada rolante (two columns) - continuous movement
+   - Uses requestAnimationFrame
+   - Pauses on mouseenter, resumes on mouseleave
+   ==================================================== */
+(function(){
+  const SPEED = 30; // px/sec - adjust if needed
+  const GAP = 12;
+
+  function initColumn(container){
+    const wrapper = container.querySelector('.infografico-scroll');
+    const nodes = Array.from(wrapper.querySelectorAll('.timeline-item'));
+    if(nodes.length === 0) return;
+
+    // absolute position items for transform-based movement
+    nodes.forEach(n=>{
+      n.style.position = 'absolute';
+      n.style.left = '8px';
+      n.style.right = '8px';
+    });
+
+    function computeLayout(){
+      const heights = nodes.map(n => n.offsetHeight);
+      const total = heights.reduce((s,h)=>s+h,0) + GAP * nodes.length;
+      // positions start above view to make continuous loop
+      const start = - (total / 2);
+      const positions = [];
+      let cur = start;
+      for(let i=0;i<nodes.length;i++){
+        positions.push(cur);
+        cur += heights[i] + GAP;
+      }
+      return {positions, heights, total};
+    }
+
+    let layout = computeLayout();
+    let y = layout.positions.slice();
+    let last = performance.now();
+    let paused = false;
+
+    container.addEventListener('mouseenter', ()=> paused = true);
+    container.addEventListener('mouseleave', ()=> paused = false);
+
+    window.addEventListener('resize', ()=>{
+      layout = computeLayout();
+      y = layout.positions.slice();
+    });
+
+    function frame(now){
+      const dt = (now - last) / 1000;
+      last = now;
+      if(!paused){
+        for(let i=0;i<nodes.length;i++){
+          y[i] += SPEED * dt;
+          if(y[i] > (container.clientHeight + layout.total/2)){
+            y[i] -= (layout.total + container.clientHeight);
+          }
+          nodes[i].style.transform = `translateY(${y[i]}px)`;
+        }
+      }
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  }
+
+  const left = document.getElementById('leftCol');
+  const right = document.getElementById('rightCol');
+  initColumn(left);
+  initColumn(right);
+})();
+
+/* ====================================================
+   Charts: 4 pies — animated, legend built manually
+   Data are approximate and based on typical distributions
+   ==================================================== */
+(function(){
+  // helper to build legend
+  function buildLegend(containerId, labels, colors){
+    const c = document.getElementById(containerId);
+    c.innerHTML = '';
+    labels.forEach((l,i)=>{
+      const div = document.createElement('div');
+      div.className = 'item';
+      const sw = document.createElement('span');
+      sw.className = 'bol';
+      sw.style.background = colors[i];
+      const txt = document.createElement('span');
+      txt.textContent = ' ' + l;
+      div.appendChild(sw);
+      div.appendChild(txt);
+      c.appendChild(div);
+    });
+  }
+
+  const baseOptions = {
+    responsive:true,
+    maintainAspectRatio:false,
+    animation:{duration:1000,easing:'easeOutBack'},
+    plugins:{
+      legend:{display:false},
+      datalabels:{
+        color:'#fff',
+        formatter:(val,ctx)=>{
+          const sum = ctx.chart.data.datasets[0].data.reduce((a,b)=>a+b,0)||1;
+          const pct = (val / sum) * 100;
+          return pct >= 5 ? pct.toFixed(0) + '%' : '';
+        },
+        font:{weight:'700',size:12},
+        anchor:'center'
+      },
+      tooltip:{
+        callbacks:{
+          label:function(ctx){
+            const v = ctx.raw;
+            const sum = ctx.chart.data.datasets[0].data.reduce((a,b)=>a+b,0)||1;
+            const pct = ((v/sum)*100).toFixed(1);
+            return `${ctx.label}: ${v} (${pct}%)`;
+          }
+        }
+      }
+    }
+  };
+
+  // WhatsApp
+  const waLabels = ['Clonagem de conta','Falso parente','Empresas falsas/links','Grupos falsos','Outros'];
+  const waData = [40,25,20,10,5];
+  const waColors = ['#06D6A0','#2dd4bf','#7be2c2','#bff0cf','#e6f8ed'];
+  buildLegend('legendWhatsApp', waLabels, waColors);
+  const chartWA = new Chart(document.getElementById('chartWhatsApp'), {
+    type:'pie', data:{labels:waLabels, datasets:[{data:waData, backgroundColor:waColors}]},
+    options: baseOptions, plugins:[ChartDataLabels]
+  });
+
+  // Instagram
+  const igLabels = ['Códigos verificação','Perfis falsos/sorteios','Investimentos','Selo falso','Outros'];
+  const igData = [35,25,20,10,10];
+  const igColors = ['#E1306C','#f07aa6','#f7b1cf','#ffc9e0','#ffeaf4'];
+  buildLegend('legendInstagram', igLabels, igColors);
+  const chartIG = new Chart(document.getElementById('chartInstagram'), {
+    type:'pie', data:{labels:igLabels, datasets:[{data:igData, backgroundColor:igColors}]},
+    options: baseOptions, plugins:[ChartDataLabels]
+  });
+
+  // Facebook
+  const fbLabels = ['Phishing (links)','Marketplace falso','Perfis clonados','Investimento/sorteio','Outros'];
+  const fbData = [35,25,20,10,10];
+  const fbColors = ['#1877F2','#5ea0ff','#9ecbff','#cfe7ff','#edf6ff'];
+  buildLegend('legendFacebook', fbLabels, fbColors);
+  const chartFB = new Chart(document.getElementById('chartFacebook'), {
+    type:'pie', data:{labels:fbLabels, datasets:[{data:fbData, backgroundColor:fbColors}]},
+    options: baseOptions, plugins:[ChartDataLabels]
+  });
+
+  // Roblox
+  const rbLabels = ['Robux grátis/phishing','Scams trade','Scripts/Extensões','Outros'];
+  const rbData = [60,20,10,10];
+  const rbColors = ['#FF3B3B','#FF8A3D','#FFCC66','#FFE6C2'];
+  buildLegend('legendRoblox', rbLabels, rbColors);
+  const chartRB = new Chart(document.getElementById('chartRoblox'), {
+    type:'pie', data:{labels:rbLabels, datasets:[{data:rbData, backgroundColor:rbColors}]},
+    options: baseOptions, plugins:[ChartDataLabels]
+  });
+
+  // visual entrance: add glow class to cards briefly
+  const cardIds = ['cardWA','cardIG','cardFB','cardRB'];
+  cardIds.forEach((id, idx) => {
+    const el = document.getElementById(id);
+    setTimeout(()=> el.classList.add('glow-in'), 120 + idx * 160);
+    setTimeout(()=> el.classList.remove('glow-in'), 1600 + idx * 160);
+  });
+})();
+
+/* ====================================================
+   Reports (localStorage) — save/load UI
+   ==================================================== */
+(function(){
+  const KEY = 'tcc_golpes_relatos_v1';
+  const input = document.getElementById('reportInput');
+  const btnSave = document.getElementById('btnSaveReport');
+  const btnClear = document.getElementById('btnClearReports');
+  const list = document.getElementById('reportList');
+
+  function load(){
+    try{
+      const raw = localStorage.getItem(KEY);
+      return raw ? JSON.parse(raw) : [];
+    }catch(e){ return [] }
+  }
+  function save(arr){ localStorage.setItem(KEY, JSON.stringify(arr)) }
+
+  function escapeHtml(s){
+    return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
+  }
+
+  function render(){
+    const arr = load();
+    list.innerHTML = '';
+    if(arr.length === 0){
+      const empty = document.createElement('div');
+      empty.className = 'report-item';
+      empty.textContent = 'Nenhum relato salvo ainda.';
+      list.appendChild(empty);
+      return;
+    }
+    arr.slice().reverse().forEach(r=>{
+      const it = document.createElement('div');
+      it.className = 'report-item';
+      it.innerHTML = `<div style="font-size:12px;color:var(--muted);margin-bottom:6px">${new Date(r.t).toLocaleString()}</div><div>${escapeHtml(r.txt)}</div>`;
+      list.appendChild(it);
+    });
+  }
+
+  btnSave.addEventListener('click', ()=>{
+    const v = input.value.trim();
+    if(!v) return;
+    const arr = load();
+    arr.push({ t: Date.now(), txt: v });
+    save(arr);
+    input.value = '';
+    render();
+  });
+
+  btnClear.addEventListener('click', ()=>{
+    if(!confirm('Limpar todos os relatos salvos no navegador?')) return;
+    localStorage.removeItem(KEY);
+    render();
+  });
+
+  // init
+  render();
+})();
+
+</script>
+</body>
+</html>
